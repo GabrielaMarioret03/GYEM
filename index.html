@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro & Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1c2b38;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #2e3d4c;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 6px 15px rgba(0,0,0,0.3);
+      width: 350px;
+      color: #fff;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 10px 10px 0 0;
+    }
+    .tab.active {
+      background: #00c896;
+      color: #fff;
+    }
+    .form {
+      display: none;
+    }
+    .form.active {
+      display: block;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00c896;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #009f75;
+    }
+    .error {
+      color: #ff8080;
+      margin-top: 10px;
+      text-align: center;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+  </style>
+  
+</head>
+<body>
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" id="signup-tab">Registrarse</div>
+      <div class="tab" id="login-tab">Iniciar Sesión</div>
+    </div>
+
+    <!-- Registro -->
+    <div class="form active" id="signup-form">
+      <h2>Crear Cuenta</h2>
+      <input type="text" id="firstName" placeholder="Nombres *">
+      <input type="text" id="lastName" placeholder="Apellidos *">
+      <input type="text" id="username-signup" placeholder="Usuario *">
+      <input type="password" id="password-signup" placeholder="Contraseña *">
+      <button onclick="signUp()">Registrar</button>
+      <p class="error" id="signup-error"></p>
+    </div>
+
+    <!-- Iniciar Sesión -->
+    <div class="form" id="login-form">
+      <h2>Bienvenido de nuevo</h2>
+      <input type="text" id="username-login" placeholder="Usuario">
+      <input type="password" id="password-login" placeholder="Contraseña">
+      <button onclick="login()">Ingresar</button>
+      <p class="error" id="login-error"></p>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+    const signupTab = document.getElementById("signup-tab");
+    const loginTab = document.getElementById("login-tab");
+    const signupForm = document.getElementById("signup-form");
+    const loginForm = document.getElementById("login-form");
+
+    signupTab.onclick = () => {
+      signupForm.classList.add("active");
+      loginForm.classList.remove("active");
+      signupTab.classList.add("active");
+      loginTab.classList.remove("active");
+    };
+
+    loginTab.onclick = () => {
+      loginForm.classList.add("active");
+      signupForm.classList.remove("active");
+      loginTab.classList.add("active");
+      signupTab.classList.remove("active");
+    };
+
+    // Registro
+    function signUp() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const username = document.getElementById("username-signup").value.trim();
+      const password = document.getElementById("password-signup").value.trim();
+      const error = document.getElementById("signup-error");
+
+      if (!firstName || !lastName || !username || !password) {
+        error.textContent = "⚠️ Por favor complete todos los campos.";
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      
+      if (users.some(u => u.username === username)) {
+        error.textContent = "⚠️ El usuario ya existe.";
+        return;
+      }
+
+      users.push({ 
+        fullName: firstName + " " + lastName, 
+        username, 
+        password 
+      });
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("✅ Cuenta creada con éxito. Ahora inicie sesión.");
+      loginTab.click();
+    }
+
+    // Iniciar sesión
+    function login() {
+      const username = document.getElementById("username-login").value.trim();
+      const password = document.getElementById("password-login").value.trim();
+      const error = document.getElementById("login-error");
+
+      // Cuenta predeterminada
+      if (username === "Seth" && password === "123456") {
+      localStorage.setItem("currentUser", JSON.stringify({ fullName: "Seth (Cuenta predeterminada)" }));
+      window.location.href = "home.html"; // ✅ redirige a home
+  return;
+    return;
+      }
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      let found = users.find(u => u.username === username && u.password === password);
+
+      if (found) {
+        localStorage.setItem("currentUser", JSON.stringify(found));
+        window.location.href = "home.html"; // ✅ redirige a home
+      } else {
+        error.textContent = "❌ Usuario o contraseña incorrectos.";
+      }
+    }
+  </script>
+</body>
+</html>
